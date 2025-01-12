@@ -1,64 +1,128 @@
-Aerial by HTML5 UP
-html5up.net | @ajlkn
-Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+Cloud Resume Challenge with Serverless Architecture
+This project combinines serverless architecture and cloud technologies to build a scalable and dynamic web resume.
 
 
-This is Aerial, a single page, single screen responsive site template. Real simple.
-Makes heavy use of CSS animation (something I've been messing with a lot lately).
-Should work well as a landing page that just directs folks to your stuff elsewhere
-on the www. Sass sources are also included, so if you've never used Sass and you're
-interested in giving it a try, head on over to sass-lang.com (and if not, you can
-safely delete the "sass/" folder).
+Architecture diagram of the Cloud Resume
 
-The scrolling mountainous background was derived from "Icefields" by Ryan Schroeder,
-a talented photographer from Vancouver who graciously released it on Unsplash under
-the CC0 license. Be sure to check out his other stuff over at flickr (link below)
-as well as all the other kickass CC0-licensed images at Unsplash (unsplash.com).
+Features
+Static Resume Website:
 
-Questions/comments/issues = just email or find me on Twitter. Have fun!
+Hosted on an S3 bucket.
+Delivered through a CloudFront distribution with custom domain integration.
+Supports HTTPS with an ACM SSL certificate.
+Visitor Counter:
 
-AJ
-aj@lkn.io | @ajlkn
+Visitor count stored in a DynamoDB table.
+Lambda function updates and retrieves the count dynamically.
+Custom Domain:
 
+Hosted on GoDaddy and integrated with CloudFront.
+Serverless Backend:
 
-The Scrolling Background:
+AWS Lambda function processes API requests.
+CloudFront forwards requests to the Lambda function.
+Technologies Used
+Frontend:
 
-	This relies entirely on CSS to do its thing, which is cool, but that makes
-	changing it a bit weird/tricky at first. You can still use pretty much any image
-	you want, but for best results make sure yours is:
+HTML/CSS/JavaScript for the resume.
+Visitor counter dynamically displayed using JavaScript.
+Backend:
 
-	- Horizontally tileable.
-	- Wide and short.
-	- About 1500px wide.
-	- Fades to a solid color either at the top of bottom (which is used to fill
-	  the empty space above or below your image).
+AWS Lambda: Updates and retrieves the visitor count.
+DynamoDB: Stores the visitor count.
+CloudFront: Distributes the website globally with caching.
+Infrastructure:
 
-	Now, there are two ways to use it: with CSS, or with Sass:
+S3: Hosts the static resume.
+GoDaddy: Manages the domain kolton.cloud.
+ACM: Provides HTTPS certificates for secure access.
+Architecture Diagram
+Below is the architecture diagram of the Cloud Resume project:
 
-	CSS:
+graph LR
+    A[User's Browser] -->|HTTPS Request| B[CloudFront Distribution]
+    B -->|Static Content| C[S3 Bucket]
+    B -->|API Request| D[AWS Lambda Function]
+    D -->|Query| E[DynamoDB]
+    D -->|Update| E
+    F[GoDaddy Domain] -->|CNAME| B
 
-		Look for this line in css/style.css (line 108 as of this writing):
+Step-by-Step Process
+1. Frontend Development
+Design and develop the static resume website using HTML/CSS/JavaScript.
+Add a visitor counter placeholder (<span id="viewer-count"></span>).
+2. Host Static Website
+Create an S3 bucket to host the static website.
+Upload the HTML, CSS, JavaScript, and assets.
+Configure the bucket as a public website or use CloudFront for secure delivery.
+3. Setup CloudFront
+Create a CloudFront distribution.
+Point the origin to the S3 bucket.
+Add an origin request policy to forward Origin headers to Lambda.
+4. Custom Domain
+Purchase the domain kolton.cloud via GoDaddy.
+Add a CNAME record in GoDaddy to point to the CloudFront distribution.
+5. Visitor Counter Backend
+DynamoDB:
 
-			background: #348cb2 url("images/bg.jpg") bottom left;
+Create a table named cloud-resume-test with id as the partition key.
+Prepopulate the table with an item: { "id": "0", "views": 0 }.
+Lambda Function:
 
-		and use it to set the page background color, URL, and placement of
-		your image. It should be as close to 1500px wide as you can get it.
+Write a Python script to:
+Retrieve the visitor count from DynamoDB.
+Increment the count and update it in DynamoDB.
+Return the updated count as a JSON response.
+Add Access-Control-Allow-Origin headers for CORS.
+Test the Lambda:
 
-	Sass:
+Deploy the function and test its API via the Lambda console.
+6. Integrate Backend with Frontend
+Modify index.js to fetch visitor count from the Lambda API and display it:
 
-		Set the value of $bg to the page background color, URL, and placement
-		of your image. Change $bg-width if your image is something other than
-		1500px wide.
+const apiEndpoint = 'https://your-lambda-url.amazonaws.com/';
+fetch(apiEndpoint)
+  .then(response => response.json())
+  .then(data => {
+    document.getElementById('viewer-count').textContent = data.views;
+  })
+  .catch(error => console.error('Error:', error));
 
+Upload index.js and other files to the S3 bucket.
 
-Credits:
+7. Enable HTTPS
+Request an SSL certificate for kolton.cloud via ACM.
+Attach the certificate to the CloudFront distribution.
+8. Testing
+Verify the website is accessible via https://www.kolton.cloud.
+Ensure the visitor counter updates correctly.
+9. Optimize and Deploy
+Invalidate CloudFront cache after updates.
+Use tools like curl or browser DevTools to debug and verify.
+Challenges Faced
+CORS Errors:
 
-	Background Image:
-		Ryan Schroeder via Unsplash (unsplash.com - CC0 licensed)
-			"Icefields" (flickr.com/photos/ryanschroeder/11876741703)
+Resolved by dynamically setting Access-Control-Allow-Origin in the Lambda function.
+Configured CloudFront to forward Origin headers.
+Region Mismatch:
 
-	Icons:
-		Font Awesome (fontawesome.io)
+Ensured Lambda and DynamoDB operated in the same region.
+Cache Invalidation:
 
-	Other:
-		Responsive Tools (github.com/ajlkn/responsive-tools)
+Used AWS CLI to invalidate CloudFront cache after deploying changes.
+Custom Domain Integration:
+
+Configured CNAME records in GoDaddy to point to CloudFront.
+How to Run Locally
+Clone the repository:
+bash
+Copy code
+git clone https://github.com/yourusername/cloud-resume
+cd cloud-resume
+Open index.html in a browser to view the resume.
+Future Enhancements
+Add more dynamic features (e.g., blog posts or projects).
+Deploy using Infrastructure as Code (e.g., AWS CloudFormation or Terraform).
+Enable analytics to track visitor behavior.
+License
+This project is licensed under the MIT License. See the LICENSE file for details.
