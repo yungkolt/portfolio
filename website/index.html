@@ -1,0 +1,39 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <title>Portfolio</title>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+        <link rel="stylesheet" href="assets/css/main.css" />
+        <noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
+    </head>
+    <body class="is-preload">
+        <div id="wrapper">
+            <div id="bg"></div>
+            <div id="overlay"></div>
+            <div id="main">
+                <!-- Header -->
+                <header id="header">
+                    <h1>Kolton Smith</h1>
+                    <p>Cloud Engineer</p>
+                    <nav>
+                        <ul>
+                            <li><a href="https://www.linkedin.com/in/koltonsmith/" class="icon brands fa-linkedin"><span class="label">LinkedIn</span></a></li>
+                            <li><a href="https://github.com/yungkolt" class="icon brands fa-github"><span class="label">Github</span></a></li>
+                            <li><a href="mailto: koltsmi04@gmail.com" class="icon solid fa-envelope"><span class="label">Email</span></a></li>
+                            <li><a href="https://docs.google.com/document/d/1yGHP9SCznm8mDttbl7z8VxKpC3zur_sfBLXT6dr2tBQ/edit?usp=sharing" class="icon solid fa-file" download="Kolton_Smith_Resume.pdf"><span class="label">Resume</span></a></li>
+                        </ul>
+                    </nav>
+                </header>
+            </div>
+        </div>
+        <script>
+            window.onload = function() { 
+                document.body.classList.remove('is-preload'); 
+                updateViewerCount(); // Call the function to update the viewer count when the page loads
+            }
+            window.ontouchmove = function() { return false; }
+            window.onorientationchange = function() { document.body.scrollTop = 0; }
+        </script>
+    </body>
+</html>
