@@ -10,13 +10,13 @@ This repository documents the process of creating a Cloud Resume using serverles
 - HTML/CSS/JavaScript for the static resume.
 - Visitor count dynamically displayed using JavaScript.
 ### **Backend:**
-- AWS Lambda: Processes requests to fetch and update visitor count.
-- DynamoDB: Stores the visitor count.
+- **AWS Lambda:** Processes requests to fetch and update visitor count.
+- **DynamoDB:** Stores the visitor count.
 ### **Infrastructure:**
-- S3: Hosts the static website files.
-- CloudFront: Provides global distribution with caching.
-- GoDaddy: Manages the custom domain kolton.cloud.
-- ACM: Provides the SSL certificate for HTTPS.
+- **S3:** Hosts the static website files.
+- **CloudFront:** Provides global distribution with caching.
+- **GoDaddy:** Manages the custom domain kolton.cloud.
+- **ACM:** Provides the SSL certificate for HTTPS.
 
 # Architecture Diagram
 
