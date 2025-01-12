@@ -1,44 +1,26 @@
-Cloud Resume Challenge with Serverless Architecture
-This project combinines serverless architecture and cloud technologies to build a scalable and dynamic web resume.
-
-
-Architecture diagram of the Cloud Resume
+Cloud Resume Challenge Guide
+This repository documents the process of creating a Cloud Resume using serverless architecture, cloud technologies, and modern web practices. Below are the steps and components used to build this project.
 
 Features
-Static Resume Website:
-
-Hosted on an S3 bucket.
-Delivered through a CloudFront distribution with custom domain integration.
-Supports HTTPS with an ACM SSL certificate.
-Visitor Counter:
-
-Visitor count stored in a DynamoDB table.
-Lambda function updates and retrieves the count dynamically.
-Custom Domain:
-
-Hosted on GoDaddy and integrated with CloudFront.
-Serverless Backend:
-
-AWS Lambda function processes API requests.
-CloudFront forwards requests to the Lambda function.
+Static Resume Website: Hosted on an S3 bucket and distributed globally via CloudFront.
+Visitor Counter: Tracks the number of visitors using a DynamoDB table and displays the count dynamically.
+Custom Domain: The website is accessible at https://www.kolton.cloud with HTTPS enabled.
+Serverless Backend: A Lambda function handles API requests to update and retrieve the visitor count.
 Technologies Used
 Frontend:
-
-HTML/CSS/JavaScript for the resume.
-Visitor counter dynamically displayed using JavaScript.
+HTML/CSS/JavaScript for the static resume.
+Visitor count dynamically displayed using JavaScript.
 Backend:
-
-AWS Lambda: Updates and retrieves the visitor count.
+AWS Lambda: Processes requests to fetch and update visitor count.
 DynamoDB: Stores the visitor count.
-CloudFront: Distributes the website globally with caching.
 Infrastructure:
-
-S3: Hosts the static resume.
-GoDaddy: Manages the domain kolton.cloud.
-ACM: Provides HTTPS certificates for secure access.
+S3: Hosts the static website files.
+CloudFront: Provides global distribution with caching.
+GoDaddy: Manages the custom domain kolton.cloud.
+ACM: Provides the SSL certificate for HTTPS.
 Architecture Diagram
-Below is the architecture diagram of the Cloud Resume project:
-
+mermaid
+Copy code
 graph LR
     A[User's Browser] -->|HTTPS Request| B[CloudFront Distribution]
     B -->|Static Content| C[S3 Bucket]
@@ -46,83 +28,72 @@ graph LR
     D -->|Query| E[DynamoDB]
     D -->|Update| E
     F[GoDaddy Domain] -->|CNAME| B
-
 Step-by-Step Process
 1. Frontend Development
-Design and develop the static resume website using HTML/CSS/JavaScript.
-Add a visitor counter placeholder (<span id="viewer-count"></span>).
-2. Host Static Website
-Create an S3 bucket to host the static website.
-Upload the HTML, CSS, JavaScript, and assets.
-Configure the bucket as a public website or use CloudFront for secure delivery.
-3. Setup CloudFront
-Create a CloudFront distribution.
-Point the origin to the S3 bucket.
-Add an origin request policy to forward Origin headers to Lambda.
-4. Custom Domain
-Purchase the domain kolton.cloud via GoDaddy.
-Add a CNAME record in GoDaddy to point to the CloudFront distribution.
-5. Visitor Counter Backend
+Create a static resume using HTML, CSS, and JavaScript.
+Add a placeholder <span id="viewer-count"></span> for the visitor count in the HTML.
+2. Hosting Static Website
+S3 Setup:
+Create an S3 bucket named cloud-resume-kolton.
+Enable static website hosting.
+Upload your resume files (e.g., index.html, style.css, index.js).
+CloudFront Setup:
+Create a CloudFront distribution pointing to your S3 bucket.
+Add an Origin Request Policy to forward Origin headers.
+3. Setting Up Custom Domain
+GoDaddy:
+Purchase and configure the domain kolton.cloud.
+Add a CNAME record pointing to your CloudFront distribution.
+4. Backend Setup
 DynamoDB:
-
-Create a table named cloud-resume-test with id as the partition key.
-Prepopulate the table with an item: { "id": "0", "views": 0 }.
+Create a table named cloud-resume-test.
+Set the Primary Key as id (Type: String).
+Add an initial item:
+json
+Copy code
+{
+    "id": "0",
+    "views": 0
+}
 Lambda Function:
-
-Write a Python script to:
-Retrieve the visitor count from DynamoDB.
-Increment the count and update it in DynamoDB.
-Return the updated count as a JSON response.
-Add Access-Control-Allow-Origin headers for CORS.
-Test the Lambda:
-
-Deploy the function and test its API via the Lambda console.
-6. Integrate Backend with Frontend
-Modify index.js to fetch visitor count from the Lambda API and display it:
-
-const apiEndpoint = 'https://your-lambda-url.amazonaws.com/';
-fetch(apiEndpoint)
-  .then(response => response.json())
-  .then(data => {
-    document.getElementById('viewer-count').textContent = data.views;
-  })
-  .catch(error => console.error('Error:', error));
-
-Upload index.js and other files to the S3 bucket.
-
-7. Enable HTTPS
-Request an SSL certificate for kolton.cloud via ACM.
-Attach the certificate to the CloudFront distribution.
-8. Testing
-Verify the website is accessible via https://www.kolton.cloud.
-Ensure the visitor counter updates correctly.
-9. Optimize and Deploy
-Invalidate CloudFront cache after updates.
-Use tools like curl or browser DevTools to debug and verify.
-Challenges Faced
-CORS Errors:
-
-Resolved by dynamically setting Access-Control-Allow-Origin in the Lambda function.
-Configured CloudFront to forward Origin headers.
-Region Mismatch:
-
-Ensured Lambda and DynamoDB operated in the same region.
-Cache Invalidation:
-
-Used AWS CLI to invalidate CloudFront cache after deploying changes.
-Custom Domain Integration:
-
-Configured CNAME records in GoDaddy to point to CloudFront.
-How to Run Locally
-Clone the repository:
+Write a Python function to:
+Fetch the visitor count from DynamoDB.
+Increment the count.
+Update the count in DynamoDB.
+Add CORS headers to allow requests from your domain.
+5. Integrate Frontend and Backend
+Update your index.js to fetch and display the visitor count:
+javascript
+Copy code
+document.addEventListener('DOMContentLoaded', () => {
+    const viewerCountElement = document.getElementById('viewer-count');
+    fetch('https://your-lambda-url.amazonaws.com/')
+        .then(response => response.json())
+        .then(data => {
+            viewerCountElement.textContent = data.views;
+        })
+        .catch(error => console.error('Error fetching viewer count:', error));
+});
+6. Enable HTTPS
+ACM Setup:
+Request a certificate for kolton.cloud and www.kolton.cloud.
+Attach the certificate to your CloudFront distribution.
+Verify the website is accessible at https://www.kolton.cloud.
+7. Testing
+Test the Lambda function in the AWS console.
+Use browser Developer Tools to verify API calls and responses.
+Use curl to manually test the API:
 bash
 Copy code
-git clone https://github.com/yourusername/cloud-resume
-cd cloud-resume
-Open index.html in a browser to view the resume.
+curl -X GET -H "Origin: https://www.kolton.cloud" https://your-lambda-url.amazonaws.com/
+Challenges Faced
+CORS Errors: Resolved by dynamically setting Access-Control-Allow-Origin in the Lambda function.
+Region Mismatch: Ensured DynamoDB and Lambda operated in the same region.
+CloudFront Cache: Used invalidations to propagate updates.
 Future Enhancements
-Add more dynamic features (e.g., blog posts or projects).
-Deploy using Infrastructure as Code (e.g., AWS CloudFormation or Terraform).
-Enable analytics to track visitor behavior.
+Add more dynamic sections to the resume (e.g., blog posts, project showcase).
+Automate deployment using Infrastructure as Code (e.g., AWS CloudFormation or Terraform).
+Add user analytics for tracking visitor interactions.
 License
-This project is licensed under the MIT License. See the LICENSE file for details.
+This project is licensed under the MIT License.
+
